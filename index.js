@@ -193,6 +193,13 @@ const createFile = (delimParts, chunk) => {
   const parents = m[0].length ? m[0].split(' ') : []
   const body = m[3] && m[3].trim()
   const contents = body && body.length ? m[9] + '\n\n' + body : m[9]
+  const mb = body.match(/(Summary:([\w\W]+))?Reviewers:([\w\W]+)Reviewed By:([\w\W]+)Differential Revision:([\w\W]+)/)
+  const phabricator = {
+    summary: mb && mb[1] ? mb[2].trim() : '',
+    reviewers: mb ? mb[3].trim().split(/\s*,\s*/) : [],
+    reviewedBy: mb ? mb[4].trim().split(/\s*,\s*/) : [],
+    revision: mb ? mb[5].trim() : ''
+  }
 
   return vfile({
     path: m[1] + '-' + m[2],
@@ -209,6 +216,7 @@ const createFile = (delimParts, chunk) => {
       // from body can get references, mentions, footer
       header: m[9],
       body: body,
+      phabricator: phabricator,
 
       // general commit info
       ref: m[10],
