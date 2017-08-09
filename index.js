@@ -193,12 +193,19 @@ const createFile = (delimParts, chunk) => {
   const parents = m[0].length ? m[0].split(' ') : []
   const body = m[3] && m[3].trim()
   const contents = body && body.length ? m[9] + '\n\n' + body : m[9]
-  const mb = body.match(/(Summary:([\w\W]+))?Reviewers:([\w\W]+)Reviewed By:([\w\W]+)Differential Revision:([\w\W]+)/)
+  const summaryMatch = body.match(/Summary:(.+)/)
+  const reviewersMatch = body.match(/Reviewers:(.+)/)
+  const reviewedByMatch = body.match(/Reviewed By:(.+)/)
+  const taskMatch = body.match(/Maniphest Tasks:(.+)/)
+  const revisionMatch = body.match(/Differential Revision:(.+)/)
+  const subscribersMatch = body.match(/Subscribers:(.+)/)
   const phabricator = {
-    summary: mb && mb[1] ? mb[2].trim() : '',
-    reviewers: mb ? mb[3].trim().split(/\s*,\s*/) : [],
-    reviewedBy: mb ? mb[4].trim().split(/\s*,\s*/) : [],
-    revision: mb ? mb[5].trim() : ''
+    summary: summaryMatch ? summaryMatch[1].trim() : '',
+    reviewers: reviewersMatch ? reviewersMatch[1].trim().split(/\s*,\s*/) : [],
+    reviewedBy: reviewedByMatch ? reviewedByMatch[1].trim().split(/\s*,\s*/) : [],
+    task: taskMatch ? taskMatch[1].trim() : '',
+    revision: revisionMatch ? revisionMatch[1].trim() : '',
+    subscribers: subscribersMatch ? subscribersMatch[1].trim().split(/\s*,\s*/) : []
   }
 
   return vfile({
